@@ -4,13 +4,23 @@ export class UserRoutes {
   constructor(expressApp, route) {
     this.app = expressApp;
     this.route = route;
+    this.userService = new UserService();
     this.initRoutes();
   }
 
   initRoutes() {
-    this.app.get(`${this.route}/`, (request, response) => {
-      const userService = new UserService();
-      response.status(200).send(userService.getAllUsers());
+    this.app.get(`${this.route}`, (request, response) => {
+      response.status(200).send(this.userService.getAllUsers());
+    });
+
+    this.app.get(`${this.route}/:id`, (request, response) => {
+      const parsedId = request.params.id;
+      response.status(200).send(this.userService.getUserById(parsedId));
+    });
+
+    this.app.post(`${this.route}`, (request, response) => {
+      console.log(request.body)
+      response.status(200).send(this.userService.createUser("firstName","lastName","username"));
     });
 
     // this.app.get('/api/users', this.userController.getAllUsers.bind(this.userController));
