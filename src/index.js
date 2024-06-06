@@ -7,8 +7,6 @@ const API_ROUTE = '/api';
 
 new UserRoutes(app, `${API_ROUTE}/users`);
 
-// app.use('/api/users', new UserRoutes(app, null));
-
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
