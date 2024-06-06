@@ -15,8 +15,19 @@ export class UserService {
     ];
   }
 
+  createUser = (firstName, lastName, username) => {
+    const user = {id: 100, firstName: firstName, lastName: lastName, username: username};
+    this.mockUsers.push(user)
+    return user;
+  }
+
+  deleteUser = (id) => {
+    const index = this.mockUsers.findIndex(user => user.id === id);
+    this.mockUsers.splice(index, 1);
+  }
+
   // async getAllUsers() {
-  getAllUsers = () => {
+  getUsers = () => {
     // return await this.userRepository.getAllUsers();
     return this.mockUsers;
   }
@@ -25,9 +36,4 @@ export class UserService {
     return this.mockUsers.find((user) => user.id == id);
   }
 
-  createUser = (firstName, lastName, username) => {
-    const user = {id: 100, firstName: firstName, lastName: lastName, username: username};
-    this.mockUsers.push(user)
-    return user;
-  }
 }

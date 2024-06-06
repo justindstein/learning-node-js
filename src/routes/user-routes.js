@@ -10,17 +10,27 @@ export class UserRoutes {
 
   initRoutes() {
     this.app.get(`${this.route}`, (request, response) => {
-      response.status(200).send(this.userService.getAllUsers());
+      response.status(200).send(
+        this.userService.getUsers()
+      );
     });
 
     this.app.get(`${this.route}/:id`, (request, response) => {
-      const parsedId = request.params.id;
-      response.status(200).send(this.userService.getUserById(parsedId));
+      response.status(200).send(
+        this.userService.getUserById(request.params.id)
+      );
     });
 
     this.app.post(`${this.route}`, (request, response) => {
-      console.log(request.body)
-      response.status(200).send(this.userService.createUser("firstName","lastName","username"));
+      response.status(200).send(
+        this.userService.createUser(request.body.firstName, request.body.lastName, request.body.username)
+      );
+    });
+
+    this.app.delete(`${this.route}/:id`, (request, response) => {
+      response.status(200).send(
+        this.userService.deleteUser(request.params.id)
+      );
     });
 
     // this.app.get('/api/users', this.userController.getAllUsers.bind(this.userController));
