@@ -1,4 +1,5 @@
 import express from 'express';
+import { config } from './config.js';
 import { UserRoutes } from './routes/user-routes.js';
 
 export class Server {
@@ -7,11 +8,11 @@ export class Server {
     this.app.use(express.json()); // for parsing POST body
 
     this.port = process.env.PORT || 3000;
-    this.api_route = '/api';
+    this.base_url = config.api.base_url;
   }
 
   setupRoutes() {
-    new UserRoutes(this.app, `${this.api_route}/users`);
+    new UserRoutes(this.app, `${this.base_url}/users`);
   }
 
   start() {
@@ -24,3 +25,34 @@ export class Server {
 const server = new Server();
 server.setupRoutes();
 server.start();
+
+///
+
+import mysql from 'mysql';
+
+let pool = mysql.createPool({
+  connectionLimit: config.database.connectionLimit,
+  host: config.database.host,
+  database: config.database.database,
+  user: config.database.user,
+  password: config.database.password
+});
+
+// Perform a query
+pool.query('SELECT * FROM user', (error, results, fields) => {
+  if (error) {
+    console.error('Error executing query:', error.stack);
+    return;
+  }
+
+  console.log('Query results:', results);
+});
+
+// Close the pool
+// pool.end((err) => {
+//   if (err) {
+//     console.error('Error ending the connection:', err.stack);
+//     return;
+//   }
+//   console.log('Connection pool closed.');
+// });
