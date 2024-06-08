@@ -8,7 +8,7 @@ export class UserRoutes {
     this.initRoutes();
   }
 
-  initRoutes() {
+  initRoutes = () => {
     this.app.post(`${this.route}`, (request, response) => {
       response.status(200).send(
         this.userService.createUser(request.body.firstName, request.body.lastName, request.body.username)
@@ -38,11 +38,5 @@ export class UserRoutes {
         this.userService.deleteUser(request.params.id)
       );
     });
-
-    // this.app.get('/api/users', this.userController.getAllUsers.bind(this.userController));
-    // this.app.get('/api/users/:id', this.userController.getUserById.bind(this.userController));
-    // this.app.post('/api/users', this.userController.createUser.bind(this.userController));
-    // this.app.put('/api/users/:id', this.userController.updateUser.bind(this.userController));
-    // this.app.delete('/api/users/:id', this.userController.deleteUser.bind(this.userController));
   }
 }

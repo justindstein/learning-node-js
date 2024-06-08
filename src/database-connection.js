@@ -2,7 +2,6 @@ import mysql from 'mysql';
 import { config } from './config.js';
 
 export class DatabaseConnection {
-
   constructor() {
     if(this.instance) {
       return this.instance;
@@ -12,7 +11,7 @@ export class DatabaseConnection {
     this.instance = this;
   }
 
-  connect() {
+  connect = () => {
     this.pool = mysql.createPool({
       connectionLimit: config.database.connectionLimit,
       host: config.database.host,
@@ -22,7 +21,7 @@ export class DatabaseConnection {
     });
   }
 
-  disconnect() {
+  disconnect = () => {
     return new Promise((resolve, reject) => {
       this.pool.end((error) => {
           if (error) {
@@ -34,7 +33,7 @@ export class DatabaseConnection {
     });
   }
 
-  getPool() {
+  getPool = () => {
     return this.pool;
   }
 }

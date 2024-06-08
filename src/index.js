@@ -19,14 +19,22 @@ export class Server {
     new UserRoutes(this.app, `${this.base_url}/users`);
   }
 
-  start() {
+  start = () => {
     console.log("Starting http server...")
     this.server = this.app.listen(this.port, () => {
       console.log(`Server is running on http://localhost:${this.port}`);
     });
   }
 
-  async shutdown() {
+  shutdown = () => {
+    console.log('Shutting down database...');
+    try {
+      this.databaseConnection.disconnect();
+    } catch (err) {
+      console.error('Error during database shutdown', err.stack);
+      process.exit(1);
+    }
+
     console.log('Shutting down http server...');
     try {
       this.server.close(() => {
@@ -37,15 +45,7 @@ export class Server {
       console.error('Error during http server shutdown', err.stack);
       process.exit(1);
     }
-
-    console.log('Shutting down database...');
-    try {
-      await this.databaseConnection.close();
-    } catch (err) {
-      console.error('Error during database shutdown', err.stack);
-      process.exit(1);
-    }
-  };
+  }
 }
 
 const server = new Server();
@@ -60,13 +60,3 @@ process.on('uncaughtException', async (err) => {
 
 server.setupRoutes();
 server.start();
-
-// Perform a query
-// pool.query('SELECT * FROM user', (error, results, fields) => {
-//   if (error) {
-//     console.error('Error executing query:', error.stack);
-//     return;
-//   }
-
-//   console.log('Query results:', results);
-// });
