@@ -21,19 +21,27 @@ export class UserService {
     return user;
   }
 
-  deleteUser = (id) => {
-    const index = this.mockUsers.findIndex(user => user.id === id);
-    this.mockUsers.splice(index, 1);
-  }
-
   // async getAllUsers() {
   getUsers = () => {
     // return await this.userRepository.getAllUsers();
     return this.mockUsers;
   }
 
-  getUserById = (id) => {
+  getUser = (id) => {
     return this.mockUsers.find((user) => user.id == id);
   }
+
+  updateUser = (id, firstName, lastName, username) => {
+    const index = this.mockUsers.findIndex(user => user.id === id);
+    this.mockUsers[index].firstName = firstName;
+    this.mockUsers[index].lastName = lastName;
+    this.mockUsers[index].username = username;
+  }
+
+  deleteUser = (id) => {
+    const index = this.mockUsers.findIndex(user => user.id === id);
+    this.mockUsers.splice(index, 1);
+  }
+
 
 }

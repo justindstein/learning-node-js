@@ -1,6 +1,7 @@
 import express from 'express';
 import { config } from './config.js';
 import { UserRoutes } from './routes/user-routes.js';
+import { DatabaseConnection } from './database-connection.js';
 
 export class Server {
   constructor() {
@@ -9,50 +10,63 @@ export class Server {
 
     this.port = process.env.PORT || 3000;
     this.base_url = config.api.base_url;
+
+    this.databaseConnection = new DatabaseConnection();
   }
 
   setupRoutes() {
+    console.log("Configuring http routes...")
     new UserRoutes(this.app, `${this.base_url}/users`);
   }
 
   start() {
-    this.app.listen(this.port, () => {
+    console.log("Starting http server...")
+    this.server = this.app.listen(this.port, () => {
       console.log(`Server is running on http://localhost:${this.port}`);
     });
   }
+
+  async shutdown() {
+    console.log('Shutting down http server...');
+    try {
+      this.server.close(() => {
+        console.log('Http server closed');
+        process.exit(0);
+      });
+    } catch (err) {
+      console.error('Error during http server shutdown', err.stack);
+      process.exit(1);
+    }
+
+    console.log('Shutting down database...');
+    try {
+      await this.databaseConnection.close();
+    } catch (err) {
+      console.error('Error during database shutdown', err.stack);
+      process.exit(1);
+    }
+  };
 }
 
 const server = new Server();
+
+// Handle various exit events
+process.on('SIGTERM', server.shutdown);
+process.on('SIGINT', server.shutdown);
+process.on('uncaughtException', async (err) => {
+  console.error('Uncaught Exception:', err.stack);
+  await server.shutdown();
+});
+
 server.setupRoutes();
 server.start();
 
-///
-
-import mysql from 'mysql';
-
-let pool = mysql.createPool({
-  connectionLimit: config.database.connectionLimit,
-  host: config.database.host,
-  database: config.database.database,
-  user: config.database.user,
-  password: config.database.password
-});
-
 // Perform a query
-pool.query('SELECT * FROM user', (error, results, fields) => {
-  if (error) {
-    console.error('Error executing query:', error.stack);
-    return;
-  }
-
-  console.log('Query results:', results);
-});
-
-// Close the pool
-// pool.end((err) => {
-//   if (err) {
-//     console.error('Error ending the connection:', err.stack);
+// pool.query('SELECT * FROM user', (error, results, fields) => {
+//   if (error) {
+//     console.error('Error executing query:', error.stack);
 //     return;
 //   }
-//   console.log('Connection pool closed.');
+
+//   console.log('Query results:', results);
 // });

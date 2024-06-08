@@ -9,6 +9,12 @@ export class UserRoutes {
   }
 
   initRoutes() {
+    this.app.post(`${this.route}`, (request, response) => {
+      response.status(200).send(
+        this.userService.createUser(request.body.firstName, request.body.lastName, request.body.username)
+      );
+    });
+
     this.app.get(`${this.route}`, (request, response) => {
       response.status(200).send(
         this.userService.getUsers()
@@ -17,13 +23,13 @@ export class UserRoutes {
 
     this.app.get(`${this.route}/:id`, (request, response) => {
       response.status(200).send(
-        this.userService.getUserById(request.params.id)
+        this.userService.getUser(request.params.id)
       );
     });
 
-    this.app.post(`${this.route}`, (request, response) => {
+    this.app.put(`${this.route}/:id`, (request, response) => {
       response.status(200).send(
-        this.userService.createUser(request.body.firstName, request.body.lastName, request.body.username)
+        this.userService.updateUser(request.params.id)
       );
     });
 
