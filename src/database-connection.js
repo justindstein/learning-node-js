@@ -2,13 +2,17 @@ import mysql from 'mysql';
 import { config } from './config.js';
 
 export class DatabaseConnection {
-  constructor() {
-    if(this.instance) {
-      return this.instance;
-    }
 
-    this.connect();
-    this.instance = this;
+  constructor() {
+  }
+
+  static getInstance = () => {
+    if (!DatabaseConnection.instance) {
+      const databaseConnection = new DatabaseConnection();
+      databaseConnection.connect();
+      DatabaseConnection.instance = databaseConnection;
+    }
+    return DatabaseConnection.instance;
   }
 
   connect = () => {

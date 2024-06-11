@@ -1,5 +1,11 @@
+import { DatabaseConnection } from '../database-connection.js';
+import { User } from '../models/user.js';
+
 export class UserService {
   constructor() {
+    // this.databaseConnection = new DatabaseConnection();
+    this.databaseConnection = DatabaseConnection.getInstance();
+
     this.mockUsers = [
       {id: 1, firstName: "John", lastName: "Smith", username: "jsmith"},
       {id: 2, firstName: "Jane", lastName: "Doe", username: "jdoe"},
@@ -22,10 +28,25 @@ export class UserService {
   }
 
   // async getAllUsers() {
-  getUsers = () => {
+  getUsersMock = () => {
     // return await this.userRepository.getAllUsers();
     return this.mockUsers;
   }
+
+  getUsers = async () => {
+    return new Promise((resolve, reject) => {
+      this.databaseConnection.getPool().query('SELECT * FROM lnjs.user', (error, results, fields) => {
+        if (error) {
+          console.error('Error executing query:', error.stack);
+          reject(error); // Reject the Promise if there's an error
+          
+        } else {
+          console.log("UserService.getUsers: ", users);
+          resolve(User.parseQueryResults(results)); // Resolve the Promise with the users data
+        }
+      });
+    });
+  };
 
   getUser = (id) => {
     return this.mockUsers.find((user) => user.id == id);
@@ -42,6 +63,4 @@ export class UserService {
     const index = this.mockUsers.findIndex(user => user.id === id);
     this.mockUsers.splice(index, 1);
   }
-
-
 }

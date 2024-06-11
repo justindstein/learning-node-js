@@ -7,3 +7,15 @@ CREATE TABLE lnjs.user (
     last_name VARCHAR(50) NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
+
+INSERT INTO lnjs.user (user_name, first_name, last_name, is_active) VALUES
+('john_doe', 'John', 'Doe', TRUE),
+('jane_smith', 'Jane', 'Smith', TRUE),
+('bob_johnson', 'Bob', 'Johnson', FALSE),
+('alice_wang', 'Alice', 'Wang', TRUE),
+('michael_chen', 'Michael', 'Chen', TRUE),
+('emily_davis', 'Emily', 'Davis', FALSE),
+('chris_brown', 'Chris', 'Brown', TRUE),
+('samantha_white', 'Samantha', 'White', TRUE),
+('david_taylor', 'David', 'Taylor', TRUE),
+('laura_miller', 'Laura', 'Miller', FALSE);

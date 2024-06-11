@@ -1,62 +1,24 @@
-import express from 'express';
+import { ExpressServer } from './express-server.js';
 import { config } from './config.js';
-import { UserRoutes } from './routes/user-routes.js';
-import { DatabaseConnection } from './database-connection.js';
 
-export class Server {
-  constructor() {
-    this.app = express();
-    this.app.use(express.json()); // for parsing POST body
-
-    this.port = process.env.PORT || 3000;
-    this.base_url = config.api.base_url;
-
-    this.databaseConnection = new DatabaseConnection();
-  }
-
-  setupRoutes() {
-    console.log("Configuring http routes...")
-    new UserRoutes(this.app, `${this.base_url}/users`);
-  }
-
-  start = () => {
-    console.log("Starting http server...")
-    this.server = this.app.listen(this.port, () => {
-      console.log(`Server is running on http://localhost:${this.port}`);
-    });
-  }
-
-  shutdown = () => {
-    console.log('Shutting down database...');
-    try {
-      this.databaseConnection.disconnect();
-    } catch (err) {
-      console.error('Error during database shutdown', err.stack);
-      process.exit(1);
-    }
-
-    console.log('Shutting down http server...');
-    try {
-      this.server.close(() => {
-        console.log('Http server closed');
-        process.exit(0);
-      });
-    } catch (err) {
-      console.error('Error during http server shutdown', err.stack);
-      process.exit(1);
-    }
-  }
+function initializeDatabaseConnection(base_url) {
 }
 
-const server = new Server();
+function initializeExpressServer(base_url) {
+  const expressServer = new ExpressServer(base_url);
 
-// Handle various exit events
-process.on('SIGTERM', server.shutdown);
-process.on('SIGINT', server.shutdown);
-process.on('uncaughtException', async (err) => {
-  console.error('Uncaught Exception:', err.stack);
-  await server.shutdown();
-});
+  // Handle various exit events
+  process.on('SIGTERM', expressServer.shutdown);
+  process.on('SIGINT', expressServer.shutdown);
+  // process.on('SIGUSR1', server.shutdown);
+  process.on('SIGUSR2', expressServer.shutdown);
+  process.on('uncaughtException', async (err) => {
+    console.error('Uncaught Exception:', err.stack);
+    await expressServer.shutdown();
+  });
 
-server.setupRoutes();
-server.start();
+  expressServer.setupRoutes();
+  expressServer.start();
+}
+
+initializeExpressServer(config.api.base_url);

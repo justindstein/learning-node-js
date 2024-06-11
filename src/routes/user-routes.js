@@ -15,10 +15,14 @@ export class UserRoutes {
       );
     });
 
-    this.app.get(`${this.route}`, (request, response) => {
-      response.status(200).send(
-        this.userService.getUsers()
-      );
+    this.app.get(`${this.route}`, async (request, response) => {
+      try {
+        const users = await this.userService.getUsers();
+        response.status(200).send(users);
+      } catch (error) {
+        console.error('Error:', error);
+        response.status(500).send('Internal Server Error');
+      }
     });
 
     this.app.get(`${this.route}/:id`, (request, response) => {
